@@ -107,6 +107,10 @@
         <contributor>
             <name>Stepan Kopriva</name>
         </contributor>
+        <contributor>
+            <name>James Roper</name>
+            <organization>Lightbend</organization>
+        </contributor>
     </contributors>
 
     <properties>
@@ -125,8 +129,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
             <plugin>

@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.ByteBuffer;
+import java.util.concurrent.Flow;
 
 /**
  * The Encoder interface defines how developers can provide a way to convert
@@ -117,6 +118,25 @@ public interface Encoder {
     }
 
     /**
+     * This interface may be implemented by encoding algorithms
+     * that want to write the encoded object to an asynchronous character stream.
+     *
+     * @param <T> the type of the object this encoder can encode to a CharacterStream.
+     */
+    interface AsyncTextStream<T> extends Encoder {
+        /**
+         * Encode the given object to a character stream writing it
+         * to the supplied Subscriber. Implementations of this method may terminate the subscriber
+         * with an EncodeException to indicate a failure to convert the supplied object to an
+         * encoded form.
+         *
+         * @param object the object to be encoded.
+         * @param subscriber the subscriber provided by the web socket runtime to write the encoded data.
+         */
+        void encode(T object, Flow.Subscriber<String> subscriber) throws EncodeException, IOException;
+    }
+
+    /**
      * This interface defines how to provide a way to convert a custom
      * object into a binary message.
      *
@@ -147,5 +167,24 @@ public interface Encoder {
          * @param os     the output stream where the encoded data is written.
          */
         void encode(T object, OutputStream os) throws EncodeException, IOException;
+    }
+
+    /**
+     * This interface may be implemented by encoding algorithms
+     * that want to write the encoded object to an asynchronous binary stream.
+     *
+     * @param <T> the type of the object this encoder can encode to a CharacterStream.
+     */
+    interface AsyncBinaryStream<T> extends Encoder {
+        /**
+         * Encode the given object to a binary stream writing it
+         * to the supplied Subscriber. Implementations of this method may terminate the subscriber
+         * with an EncodeException to indicate a failure to convert the supplied object to an
+         * encoded form.
+         *
+         * @param object the object to be encoded.
+         * @param subscriber the subscriber provided by the web socket runtime to write the encoded data.
+         */
+        void encode(T object, Flow.Subscriber<ByteBuffer> subscriber) throws EncodeException, IOException;
     }
 }

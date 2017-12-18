@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.ByteBuffer;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow;
 
 /**
  * The Decoder interface holds member interfaces that define how a developer can provide
@@ -117,6 +119,23 @@ public interface Decoder {
 
     /**
      * This interface defines how a custom object is decoded from a web socket message in
+     * the form of an asynchronous binary stream.
+     */
+    interface AsyncBinaryStream<T> extends Decoder {
+
+        /**
+         * Decode the given bytes read from the publisher into an object of type T.
+         *
+         * @param publisher the publisher carrying the bytes.
+         * @return a future of the decoded object.
+         */
+        CompletionStage<T> decode(Flow.Publisher<T> publisher) throws DecodeException, IOException;
+
+
+    }
+
+    /**
+     * This interface defines how a custom object is decoded from a web socket message in
      * the form of a string.
      */
     interface Text<T> extends Decoder {
@@ -153,5 +172,21 @@ public interface Decoder {
          */
         T decode(Reader reader) throws DecodeException, IOException;
         
+    }
+
+    /**
+     * This interface defines how a custom object of type T is decoded from a web socket message in
+     * the form of an asynchronous character stream.
+     */
+    interface AsyncTextStream<T> extends Decoder {
+        /**
+         * Reads the websocket message from the implementation provided
+         * Reader and decodes it into an instance of the supplied object type.
+         *
+         * @param publisher the publisher that publishers the messages.
+         * @return a future of the object that is the decoded web socket message.
+         */
+        CompletionStage<T> decode(Flow.Publisher<String> publisher) throws DecodeException, IOException;
+
     }
 }
